@@ -5,10 +5,12 @@
  */
 package org.geoserver.wps.sextante;
 
+import static junit.framework.Assert.assertEquals;
+
 import org.geoserver.wps.WPSTestSupport;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
-
 
 public class SextanteIntegrationTest extends WPSTestSupport {
 
@@ -16,6 +18,7 @@ public class SextanteIntegrationTest extends WPSTestSupport {
      * Tests raster input and output as arcgrid
      * @throws Exception
      */
+	@Test
     public void testArcGridInOut() throws Exception {
         // the baby that we want to parse
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
