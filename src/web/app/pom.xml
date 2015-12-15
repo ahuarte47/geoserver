@@ -738,6 +738,51 @@
         </dependency>
       </dependencies>
     </profile>
+    
+    <!-- ========================================= Tracasa modules =================================== 
+         ### ahuarte - 15/12/2.015:
+         
+       * Annadimos la referencia del plugin a incluir en el WAR final de ejecucion como PROFILE (Asi lo
+         recomienda la documentacion de GeoServer) para que su inclusion en ese WAR sea opcional con 
+         el uso del parametro -P...
+         
+         mvn -DskipTests install -Pwps,HelloWPS,HelloWPS_NM,LRSGeocodePk,printing,inspire
+         
+       * Otra opcion seria annadir los plugins como dependencias directas en este POM en el nodo XML
+         llamado 'dependencies' y asi no tener que incluirlos con el parametro -P...
+         De esta forma siempre se mete en el WAR final de distribucion, pero igual no es deseable.
+         
+         mvn -DskipTests install -Pwps
+     -->
+    <profile>
+      <id>HelloWPS</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.wps.tracasa</groupId>
+          <artifactId>HelloWPS</artifactId>
+          <version>2.0-SNAPSHOT</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>LRSGeocodePk</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.wps.tracasa</groupId>
+          <artifactId>Tracasa.LRSGeocodePk</artifactId>
+          <version>2.0.0</version>
+        </dependency>
+        <!-- ### ANULADO; Hasta que sea necesario referenciarlo para compartir funciones o clases HELPER sobre gestion WPS.
+        <dependency>
+          <groupId>org.geoserver.wps.tracasa</groupId>
+          <artifactId>Tracasa.wps-core</artifactId>
+          <version>2.0.0</version>
+        </dependency>
+         -->
+      </dependencies>
+    </profile>
+    <!-- ============================================================================================= -->
+    
     <profile>
       <id>querylayer</id>
       <dependencies>
