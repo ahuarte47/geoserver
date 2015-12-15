@@ -23,7 +23,7 @@
          FILE
          - outputs to the local filesystem first, before sending it off to the user
       -->
-    <param-value>PARTIAL-BUFFER2</param-value>
+    <param-value>SPEED</param-value>
   </context-param>
   
   <context-param>
@@ -55,6 +55,10 @@
         <param-value>C:\eclipse\workspace\geoserver_trunk\cite\confCiteWFSPostGIS</param-value>
     </context-param> 
    -->
+    <context-param>
+       <param-name>GEOWEBCACHE_CACHE_DIR</param-name>
+       <param-value>E:\GWC</param-value>
+    </context-param>
     
     <!-- pick up all spring application contexts -->
     <context-param>
