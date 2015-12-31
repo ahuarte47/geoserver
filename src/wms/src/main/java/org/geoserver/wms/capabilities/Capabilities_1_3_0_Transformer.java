@@ -164,7 +164,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
      * @author Gabriel Roldan
      * @version $Id
      */
-    private static class Capabilities_1_3_0_Translator extends TranslatorSupport {
+    private static class Capabilities_1_3_0_Translator extends NestedTranslatorSupport {
 
         private static final String XML_SCHEMA_INSTANCE = "http://www.w3.org/2001/XMLSchema-instance";
 
@@ -930,6 +930,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 // report what layer we failed on to help the admin locate and fix it
                 
                 if (skipping) {
+                    if (!containsException(e, org.geoserver.ows.ClientStreamAbortedException.class))
                     LOGGER.log(Level.WARNING,
                             "Error writing metadata; skipping layer: " + layer.getName(), e);
                     reset();
@@ -939,6 +940,14 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                         layer.getName(), e);
                 }
             }
+        }
+        public static boolean containsException(Throwable exception, Class<?> exceptionClass) {
+            if (exception!=null) {
+                if (exception.getClass()==exceptionClass) return true;
+                exception = exception.getCause();
+                return containsException(exception, exceptionClass);
+            }
+            return false;
         }
 
         private boolean isExposable(LayerInfo layer) {
@@ -1265,7 +1274,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     if (child instanceof LayerInfo) {
                         LayerInfo layer = (LayerInfo) child;
                         if (isExposable(layer)) {
-                            handleLayer((LayerInfo) child);
+                            doHandleLayer((LayerInfo) child);
                             layersAlreadyProcessed.add((LayerInfo) child);
                         }
                     } else {

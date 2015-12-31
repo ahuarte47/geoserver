@@ -204,7 +204,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
      * @author Gabriel Roldan
      * @version $Id
      */
-    private static class CapabilitiesTranslator extends  TranslatorSupport {
+    private static class CapabilitiesTranslator extends NestedTranslatorSupport {
 
 
         private static final Logger LOGGER = org.geotools.util.logging.Logging
@@ -805,6 +805,31 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             handleAdditionalBBox(new ReferencedEnvelope(latlonBbox, DefaultGeographicCRS.WGS84), null, null);
         }
 
+        private void doHandleLayer(LayerInfo layer) {
+            try {
+                mark();
+                handleLayer(layer);
+                commit();
+            } catch (Exception e) {
+                // report what layer we failed on to help the admin locate and fix it
+                if (skipping) {
+                    if (!containsException(e, org.geoserver.ows.ClientStreamAbortedException.class))
+                    LOGGER.log(Level.WARNING, "Error writing metadata; skipping layer: " + layer.getName(), e);
+                    reset();
+                } else { 
+                    throw new ServiceException("Error occurred trying to write out metadata for layer: " + layer.getName(), e);
+                }
+            }
+        }
+        public static boolean containsException(Throwable exception, Class<?> exceptionClass) {
+            if (exception!=null) {
+                if (exception.getClass()==exceptionClass) return true;
+                exception = exception.getCause();
+                return containsException(exception, exceptionClass);
+            }
+            return false;
+        }
+        
         private boolean isExposable(LayerInfo layer) {
             if(!layer.isEnabled()) {
                 return false;
@@ -829,24 +854,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 // ask for enabled() instead of isEnabled() to account for disabled resource/store
                 // don't expose a geometryless layer through wms
                 if (layer.enabled() && !layersAlreadyProcessed.contains(layer) && isExposable(layer)) {
-                    try {
-                        mark();
-                        handleLayer(layer);
-                        commit();
-                    } catch (Exception e) {
-                        if (skipping) {
-                            reset();
-                            LOGGER.log(
-                                Level.WARNING, 
-                                "Error writing metadata; skipping layer: " + layer.getName(),
-                                e);
-                        } else {
-                            // report what layer we failed on to help the admin locate and fix it
-                            throw new ServiceException(
-                                    "Error occurred trying to write out metadata for layer: "
-                                            + layer.getName(), e);
-                        }
-                    }
+                    doHandleLayer(layer);
                 }
             }
 
@@ -1139,7 +1147,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                    if (child instanceof LayerInfo) {
                        LayerInfo layer = (LayerInfo) child;
                        if (isExposable(layer)) {
-                           handleLayer((LayerInfo) child);
+                           doHandleLayer((LayerInfo) child);
                            layersAlreadyProcessed.add((LayerInfo) child);
                        }
                    } else {
