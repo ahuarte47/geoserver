@@ -1125,6 +1125,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
            handleLayerIdentifiers(layerGroup.getIdentifiers());
            
            Collection<MetadataLinkInfo> metadataLinks = layerGroup.getMetadataLinks();
+           /* 
+            * ### ahuarte - 15/12/2.015. No populate metadata of child layers.
+            * It duplicates too data in GetCapabilities request.
+            * 
            if (metadataLinks == null || metadataLinks.isEmpty()) {
                //Aggregated metadata links (see GEOS-4500)               
                Set<MetadataLinkInfo> aggregatedLinks = new HashSet<MetadataLinkInfo>();
@@ -1135,7 +1139,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                    }
                }
                metadataLinks = aggregatedLinks;
-           }
+           }*/
            handleMetadataList(metadataLinks);
 
            // handle children layers and groups
