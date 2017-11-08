@@ -114,6 +114,13 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
         }
         rendererParams.put(StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
                 mapContent.getRendererScaleMethod());
+        
+        // Consider DPI settings from format_options parameter.
+        org.geoserver.wms.GetMapRequest request = mapContent.getRequest();
+        if (request != null && request.getFormatOptions().get("dpi") != null) {
+            rendererParams.put(StreamingRenderer.DPI_KEY, request.getFormatOptions().get("dpi"));
+        }
+
         renderer.setRendererHints(rendererParams);
         renderer.setMapContent(mapContent);
         return renderer;
@@ -141,8 +148,22 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
                 throw new IOException("Could not determine map dimensions");
             }
 
+            // get whether draw texts using shapes (Outlines from GlyphVectors) or plain strings. 
+            boolean textAsShapes = true;
+            //
+            if (mapContent.getRequest() != null) {
+                Object option = mapContent.getRequest().getFormatOptions().get("textAsShapes");
+                
+                if (option != null) {
+                    Boolean value = org.geotools.util.Converters.convert(option, Boolean.class);
+                    Map hints = renderer.getRendererHints();
+                    if (hints != null) hints.put("textAsShapes", value);
+                    textAsShapes = value.booleanValue();
+                }
+            }
+            
             SVGGeneratorContext context = setupContext();
-            SVGGraphics2D g = new SVGGraphics2D(context, true);
+            SVGGraphics2D g = new SVGGraphics2D(context, textAsShapes);
 
             g.setSVGCanvasSize(new Dimension((int) width, (int) height));
 
