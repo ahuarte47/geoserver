@@ -55,9 +55,13 @@
         <param-value>C:\eclipse\workspace\geoserver_trunk\cite\confCiteWFSPostGIS</param-value>
     </context-param> 
    -->
+    
+    <!-- Forcing GeoServer to relinquish Log4J control
+         http://docs.geoserver.org/latest/en/user/tutorials/jboss/jboss_tutorial.html
+         http://docs.geoserver.org/stable/en/user/advanced/logging.html -->
     <context-param>
-       <param-name>GEOWEBCACHE_CACHE_DIR</param-name>
-       <param-value>E:\GWC</param-value>
+       <param-name>RELINQUISH_LOG4J_CONTROL</param-name>
+       <param-value>true</param-value>
     </context-param>
     
     <!-- pick up all spring application contexts -->
