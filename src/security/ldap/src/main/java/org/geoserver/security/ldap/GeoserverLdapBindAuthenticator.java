@@ -89,6 +89,21 @@ public class GeoserverLdapBindAuthenticator extends BindAuthenticator {
                     "BindAuthenticator.emptyPassword", "Empty Password"));
         }
 
+        // check '\' or '/' windows domain separator, replace then username text
+        if (username != null && !username.equals("")) {
+            String[] parseArray;
+            username = username.replace('\\', '/');
+            
+            if (username.indexOf('/') != -1 && (parseArray = username.split("/")) != null && parseArray.length > 1) {
+                username = parseArray[1] + "@" + parseArray[0];
+                originalUser = parseArray[1];
+            }
+            if (username.indexOf('@') != -1 && (parseArray = username.split("@")) != null && parseArray.length > 2) {
+                username = parseArray[0] + "@" + parseArray[parseArray.length-1];
+                originalUser = parseArray[0];
+            }
+        }
+
         DirContext ctx = null;
         String userDnStr = "";
         try {
