@@ -47,4 +47,15 @@ public final class ViewServicesUtils {
         translator.end("inspire_common:ResponseLanguage");
         translator.end("inspire_vs:ExtendedCapabilities");
     }
+    
+    public static void addScenarioHarcodedElements(Translator translator, NamespaceSupport namespaces, String metadataHardcodedText) {
+        translator.start("inspire_vs:ExtendedCapabilities");
+        org.geoserver.inspire.InspireMetadata.writeDomElement(translator, namespaces, metadataHardcodedText);
+        translator.end("inspire_vs:ExtendedCapabilities");
+    }
+    public static void addScenarioHarcodedElements(Translator translator, String metadataHardcodedText) {
+        translator.start("inspire_vs:ExtendedCapabilities");
+        org.geoserver.inspire.InspireMetadata.writeDomElement(translator, metadataHardcodedText);
+        translator.end("inspire_vs:ExtendedCapabilities");
+    }
 }

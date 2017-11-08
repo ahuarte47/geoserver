@@ -133,7 +133,12 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
             OwsUtils.parameter(operation.getParameters(), EObject.class));
         if (gf != null) {
             for (Query q : gf.getQueries()) {
-                qualifyTypeNames(q.getTypeNames(), workspace, ns);
+                List<QName> typeNames = q.getTypeNames();
+                
+                // Ignore null typeNames from GetFeature requests with a StoredQuery reference.
+                if (typeNames != null) {
+                    qualifyTypeNames(typeNames, workspace, ns);
+                }
             }
             return;
         }

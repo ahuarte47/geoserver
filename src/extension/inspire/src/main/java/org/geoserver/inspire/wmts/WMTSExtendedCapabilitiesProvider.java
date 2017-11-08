@@ -22,6 +22,7 @@ import org.geowebcache.service.OWSException;
 import org.geowebcache.service.wmts.WMTSExtension;
 import org.geowebcache.storage.StorageBroker;
 import org.xml.sax.Attributes;
+import org.xml.sax.helpers.NamespaceSupport;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +33,7 @@ import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
+import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_HARDCODED_TEXT;
 import static org.geoserver.inspire.InspireSchema.COMMON_NAMESPACE;
 
 public class WMTSExtendedCapabilitiesProvider implements WMTSExtension {
@@ -106,6 +108,20 @@ public class WMTSExtendedCapabilitiesProvider implements WMTSExtension {
         MetadataMap serviceMetadata = geoserver.getService(WMTSInfo.class).getMetadata();
         Boolean createExtendedCapabilities = serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
+        
+        // OPT: INSPIRE SCENARIO HARCODED
+        String metadataHardcodedText = (String) serviceMetadata.get(SERVICE_METADATA_HARDCODED_TEXT.key);
+        if ((metadataHardcodedText == null || metadataHardcodedText.length() == 0) || (createExtendedCapabilities != null && !createExtendedCapabilities)) {
+            return;
+        }
+        if ((metadataHardcodedText != null && metadataHardcodedText.length() > 0)) {
+            NamespaceSupport namespaces = new NamespaceSupport();
+            namespaces.declarePrefix("inspire_common", COMMON_NAMESPACE);
+            namespaces.declarePrefix("inspire_vs", VS_VS_OWS_NAMESPACE);
+            ViewServicesUtils.addScenarioHarcodedElements(translator, namespaces, metadataHardcodedText);
+            return;
+        }
+        
         if (metadataURL == null || createExtendedCapabilities != null && !createExtendedCapabilities) {
             return;
         }

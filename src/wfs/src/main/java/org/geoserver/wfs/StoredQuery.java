@@ -205,6 +205,13 @@ public class StoredQuery {
                 }
             }
             
+            //do the necessary namespace injection to successfully parse the xml text.
+            if (catalog != null && sb.indexOf("xmlns:wfs=")==-1 && sb.indexOf("wfs:typeNames=")!=-1) {
+                String nm = "";
+                nm = "xmlns:wfs='" + WFS.NAMESPACE + "' ";
+                sb = new StringBuffer(sb.toString().replace("wfs:typeNames=", nm + "wfs:typeNames="));
+            }
+
             //parse
             Parser p = new Parser(new WFSConfiguration());
             //"inject" namespace mappings

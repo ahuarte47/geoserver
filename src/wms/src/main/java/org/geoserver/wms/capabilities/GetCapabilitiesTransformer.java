@@ -348,6 +348,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             element("Fees", fees == null ? "none" : fees);
             String constraints = serviceInfo.getAccessConstraints();
             element("AccessConstraints", constraints == null ? "none" : constraints);
+
+            // TODO: LayerLimit, MaxWidth and MaxHeight have no equivalence in GeoServer config so far
+            element("MaxWidth", "4096");
+            element("MaxHeight", "4096");
+
             end("Service");
         }
 

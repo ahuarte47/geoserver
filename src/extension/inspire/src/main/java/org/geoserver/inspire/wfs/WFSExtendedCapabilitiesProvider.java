@@ -10,6 +10,7 @@ import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE;
+import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_HARDCODED_TEXT;
 import static org.geoserver.inspire.InspireSchema.COMMON_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.DLS_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.DLS_SCHEMA;
@@ -58,6 +59,21 @@ public class WFSExtendedCapabilitiesProvider implements
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
         String language = (String) serviceMetadata.get(LANGUAGE.key);
         UniqueResourceIdentifiers ids = (UniqueResourceIdentifiers) serviceMetadata.get(SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
+        
+        // OPT: INSPIRE SCENARIO HARCODED
+        String metadataHardcodedText = (String) serviceMetadata.get(SERVICE_METADATA_HARDCODED_TEXT.key);
+        if ((metadataHardcodedText == null || metadataHardcodedText.length() == 0) || (createExtendedCapabilities != null && !createExtendedCapabilities)) {
+            return;
+        }
+        if ((metadataHardcodedText != null && metadataHardcodedText.length() > 0)) {
+            tx.start("ows:ExtendedCapabilities");
+            tx.start("inspire_dls:ExtendedCapabilities");
+            org.geoserver.inspire.InspireMetadata.writeDomElement(tx, metadataHardcodedText);
+            tx.end("inspire_dls:ExtendedCapabilities");
+            tx.end("ows:ExtendedCapabilities");
+            return;
+        }
+
         //Don't create extended capabilities element if mandatory content not present
         //or turned off
         if (metadataURL == null

@@ -9,6 +9,7 @@ import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
+import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_HARDCODED_TEXT;
 import static org.geoserver.inspire.InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE;
 
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class InspireAdminPanel extends AdminPagePanel {
 
         MetadataMap serviceMetadata = model.getObject().getMetadata();
 
+        /* OPT: INSPIRE SCENARIO HARCODED
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
         String language = (String) serviceMetadata.get(LANGUAGE.key);
@@ -69,6 +71,10 @@ public class InspireAdminPanel extends AdminPagePanel {
             } else {
                 serviceMetadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
             }
+        }
+        */
+        if (!serviceMetadata.containsKey(CREATE_EXTENDED_CAPABILITIES.key)) {
+            serviceMetadata.put(CREATE_EXTENDED_CAPABILITIES.key, false);
         }
 
         PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(model, "metadata");
@@ -97,6 +103,20 @@ public class InspireAdminPanel extends AdminPagePanel {
             }
         });
 
+        // OPT: INSPIRE SCENARIO HARCODED
+        serviceMetadata.remove(SERVICE_METADATA_URL.key);
+        serviceMetadata.remove(SERVICE_METADATA_TYPE.key);
+        serviceMetadata.remove(SPATIAL_DATASET_IDENTIFIER_TYPE.key);
+        serviceMetadata.remove(LANGUAGE.key);
+        if (!serviceMetadata.containsKey(SERVICE_METADATA_HARDCODED_TEXT.key)) {
+            serviceMetadata.put(SERVICE_METADATA_HARDCODED_TEXT.key, "");
+        }
+        MetadataMapModel harcodedTextModel = new MetadataMapModel(metadata, SERVICE_METADATA_HARDCODED_TEXT.key, String.class);
+        org.geoserver.web.wicket.CodeMirrorEditor metadataEditor = new org.geoserver.web.wicket.CodeMirrorEditor("metadataHardcodedText", harcodedTextModel);
+        metadataEditor.setRequired(true);
+        configs.add(metadataEditor);
+        
+        /* OPT: INSPIRE SCENARIO HARCODED
         if (!model.getObject().getMetadata().containsKey(LANGUAGE.key)) {
             model.getObject().getMetadata().put(LANGUAGE.key, "eng");
         }
@@ -154,5 +174,6 @@ public class InspireAdminPanel extends AdminPagePanel {
         UniqueResourceIdentifiersEditor identifiersEditor = new UniqueResourceIdentifiersEditor(
                 "spatialDatasetIdentifiers", sdiModel);
         identifiersContainer.add(identifiersEditor);
+        */
     }
 }

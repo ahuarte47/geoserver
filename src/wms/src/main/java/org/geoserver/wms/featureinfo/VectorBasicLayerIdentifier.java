@@ -82,7 +82,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         // compute the bbox for the request 
         ReferencedEnvelope queryEnvelope = getEnvelopeFilter(params, radius);
         CoordinateReferenceSystem requestedCRS = params.getRequestedCRS();
-        CoordinateReferenceSystem dataCRS = layer.getCoordinateReferenceSystem();
+        CoordinateReferenceSystem dataCRS = layer.getResource().getNativeCRS();
         if ((requestedCRS != null) && !CRS.equalsIgnoreMetadata(dataCRS, requestedCRS)) {
             if (dataCRS.getCoordinateSystem().getDimension() == 3
                     && requestedCRS.getCoordinateSystem().getDimension() == 2) {

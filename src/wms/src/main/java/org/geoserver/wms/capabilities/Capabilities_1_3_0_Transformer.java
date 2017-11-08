@@ -352,6 +352,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             // TODO: LayerLimit, MaxWidth and MaxHeight have no equivalence in GeoServer config so
             // far
+            element("MaxWidth", "4096");
+            element("MaxHeight", "4096");
+
             end("Service");
         }
 

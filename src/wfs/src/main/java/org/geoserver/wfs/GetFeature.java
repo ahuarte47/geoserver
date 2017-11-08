@@ -309,6 +309,11 @@ public class GetFeature {
             // as a request for strict(er) compliance with the WFS 2.0 spec.
             // See GEOS-5085.
             totalOffset = 0;
+            
+            // ARGHH! Disable this, does anyone use it?
+            // It forces to apply a SortBy clause to the FeatureSource generating when not supported 
+            // many-many-many temporal sorted files.
+            totalOffset = -1;
         }
         int offset = totalOffset;
         
@@ -359,6 +364,31 @@ public class GetFeature {
                 // need to consider xpath properties and how to configure namespace prefixes in
                 // GeoTools app-schema FeaturePropertyAccessorFactory.
                 Filter filter = query.getFilter();
+                
+                // For complex features, we need reproject the features when the declaredCRS
+                // of the FeatureLayer is not equal than NativeCRS.
+                if (query.getSrsName() == null && !(meta.getFeatureType() instanceof SimpleFeatureType)) {
+                    CoordinateReferenceSystem nativeCRS = meta.getNativeCRS();
+                    CoordinateReferenceSystem outputCRS = meta.getCRS();
+                    
+                    if (nativeCRS != null && outputCRS != null && !CRS.equalsIgnoreMetadata(nativeCRS, outputCRS)) {
+                        try {
+                            Integer epsgCode = CRS.lookupEpsgCode(outputCRS, false);
+                            
+                            if (epsgCode > 0) {
+                                GMLInfo gml = wfs.getGML().get(WFSInfo.Version.get(request.getVersion()));
+                                String prefix = gml != null ? gml.getSrsNameStyle().getPrefix() : "EPSG:";
+                                org.geotools.xml.EMFUtils.set(query.getAdaptee(), "srsName", new URI(prefix + epsgCode));
+                            }
+                        }
+                        catch (org.opengis.referencing.FactoryException e) {
+                            throw new WFSException(request, "Error occurred getting features", e, request.getHandle());
+                        }
+                        catch (java.net.URISyntaxException e) {
+                            throw new WFSException(request, "Error occurred getting features", e, request.getHandle());
+                        }
+                    }
+                }
                 
                 if (filter == null && metas.size() > 1) {
                     throw new WFSException(request, "Join query must specify a filter");
@@ -520,6 +550,11 @@ public class GetFeature {
                     features.getSchema().getUserData().put("targetVersion", request.getVersion());
                 }
 
+                // Invert wise of rings of polygon features when the axis order of the transformation changes.
+                if (wfs.isCiteCompliant()) {
+                    features = new FeatureWiseFeatureCollection<FeatureType, Feature>(features);
+                }
+                
                 if (!calculateSize) {
                     //if offset was specified and we have more queries left in this request then we 
                     // must calculate size in order to adjust the offset 

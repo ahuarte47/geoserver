@@ -8,6 +8,7 @@ package org.geoserver.inspire.wms;
 import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
+import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_HARDCODED_TEXT;
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireSchema.VS_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.VS_SCHEMA;
@@ -73,6 +74,17 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
         MetadataMap serviceMetadata = wms.getMetadata();
         Boolean createExtendedCapabilities = serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
+
+        // OPT: INSPIRE SCENARIO HARCODED
+        String metadataHardcodedText = (String) serviceMetadata.get(SERVICE_METADATA_HARDCODED_TEXT.key);
+        if ((metadataHardcodedText == null || metadataHardcodedText.length() == 0) || (createExtendedCapabilities != null && !createExtendedCapabilities)) {
+            return;
+        }
+        if ((metadataHardcodedText != null && metadataHardcodedText.length() > 0)) {
+            ViewServicesUtils.addScenarioHarcodedElements(tx, metadataHardcodedText);
+            return;
+        }
+        
         //Don't create extended capabilities element if mandatory content not present
         //or turned off
         if (metadataURL == null
