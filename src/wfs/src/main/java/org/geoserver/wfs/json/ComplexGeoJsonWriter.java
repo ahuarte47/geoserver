@@ -109,6 +109,9 @@ public final class ComplexGeoJsonWriter {
             }
             // store the attribute name and geometry value of the current feature
             geometryAttribute = feature.getProperty(geometryType.getName());
+            if (geometryAttribute == null) {
+                geometryAttribute = feature.getDefaultGeometryProperty();
+            }
             geometry = (Geometry) geometryAttribute.getValue();
         } else {
             // this feature seems to not have a geometry, write the default axis order
@@ -165,6 +168,51 @@ public final class ComplexGeoJsonWriter {
     }
 
     /**
+     * Group the Property collection by attribute name.
+     */
+    private static Map<String,List<Property>> groupAttributesByName(List<Property> properties) {
+        Map<String,List<Property>> index = new HashMap<String,List<Property>>();
+        
+        for (Property property : properties) {
+            String name = property.getName().getLocalPart();
+            
+            if (index.containsKey(name)) {
+                index.get(name).add(property);
+            }
+            else {
+                List<Property> tempList = new ArrayList<Property>();
+                tempList.add(property);
+                index.put(name, tempList);
+            }
+        }
+        return index;
+    }
+    
+    /**
+     * Encode feature properties grouped by name, it can create array subobjects.
+     */
+    private void encodeGroupedProperties(List<Property> properties) {
+        for (Map.Entry<String,List<Property>> entry : ComplexGeoJsonWriter.groupAttributesByName(properties).entrySet()) {
+            String kname = entry.getKey();
+            List<Property> kproperties = entry.getValue();
+            
+            if (kproperties.size() > 1) {
+                jsonWriter.key(kname);
+                jsonWriter.array();
+                for (Property property : kproperties) {
+                    jsonWriter.object();
+                    encodeProperty(property);
+                    jsonWriter.endObject();
+                }
+                jsonWriter.endArray();
+            }
+            else {
+                kproperties.forEach(this::encodeProperty);
+            }
+        }
+    }
+
+    /**
      * Encode feature properties by type, we do this way so we can handle the case were
      * these properties should be encoded as a list or as elements that appear multiple
      * times.
@@ -173,13 +221,13 @@ public final class ComplexGeoJsonWriter {
         PropertyDescriptor multipleType = isMultipleType(parentType, type);
         if (multipleType == null) {
             // simple JSON objects
-            properties.forEach(this::encodeProperty);
+            encodeGroupedProperties(properties);
         } else {
             // possible chained features that need to be encoded as a list
             List<Feature> chainedFeatures = getChainedFeatures(properties);
             if (chainedFeatures == null || chainedFeatures.isEmpty()) {
                 // no chained features just encode each property
-                properties.forEach(this::encodeProperty);
+                encodeGroupedProperties(properties);
             } else {
                 // chained features so we need to encode the chained features as an array
                 encodeChainedFeatures(multipleType.getName().getLocalPart(), chainedFeatures);
@@ -380,6 +428,26 @@ public final class ComplexGeoJsonWriter {
         String name = attribute.getName().getLocalPart();
         jsonWriter.key(name);
         jsonWriter.object();
+        
+        // extra attributes should be seen as XML attributes
+        // See:
+        // https://github.com/geoserver/geoserver/blob/master/src/wfs/src/main/java/org/geoserver/wfs/json/ComplexGeoJsonWriter.java#L383
+        //
+        Map<Object, Object> userData = attribute.getUserData();
+        if (userData != null && userData.size() > 0) {
+            Map<org.geotools.feature.NameImpl,Object> attributes = (Map<org.geotools.feature.NameImpl,Object>)userData.get(org.xml.sax.Attributes.class);
+            if (attributes != null) {
+                for (Map.Entry<org.geotools.feature.NameImpl,Object> entry : attributes.entrySet()) {
+                    String kname = entry.getKey().getLocalPart();
+                    Object value = entry.getValue();
+                    
+                    if (value != null && !kname.equalsIgnoreCase("nilReason") && !kname.equalsIgnoreCase("nil")) {
+                        // encode attribute, we don't take namespace into account
+                        jsonWriter.key("@" + kname).value(value.toString());
+                    }
+                }
+            }
+        }
         // encode the object properties, since this is not a top feature or a
         // chained feature we don't need to explicitly handle the geometry attribute
         encodeProperties(null, attribute.getType(), attribute.getProperties());

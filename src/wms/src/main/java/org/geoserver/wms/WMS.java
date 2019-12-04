@@ -962,6 +962,11 @@ public class WMS implements ApplicationContextAware {
      * </p>
      */
     public static String toInternalSRS(String srs, Version version) {
+        // Sometimes "CRS.lookupIdentifier(crs, false)" already returns the "EPSG" namespace in 
+        // the srs itself, other methods (e.g. OpenLayersMapOutputFormat.isWms13FlippedCRS(...))
+        // add this namespace again without checking it already exists.
+        srs = srs.replace("EPSG:EPSG", "EPSG");
+        
         if (VERSION_1_3_0.equals(version)) {
             if (srs != null && srs.toUpperCase().startsWith("EPSG:")) {
                 srs = srs.toUpperCase().replace("EPSG:", "urn:ogc:def:crs:EPSG:");

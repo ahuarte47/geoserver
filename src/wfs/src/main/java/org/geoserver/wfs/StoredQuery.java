@@ -44,7 +44,7 @@ public class StoredQuery {
     /**
      * default stored query
      */
-    public static final StoredQuery DEFAULT;
+    public static StoredQuery DEFAULT;
     static {
         Wfs20Factory factory = Wfs20Factory.eINSTANCE;
         StoredQueryDescriptionType desc = factory.createStoredQueryDescriptionType();
@@ -83,6 +83,10 @@ public class StoredQuery {
     public StoredQuery(StoredQueryDescriptionType query, Catalog catalog) {
         this.queryDef = query;
         this.catalog = catalog;
+        
+        if (DEFAULT != null && DEFAULT != this && this.getName().equals(DEFAULT.getName())) {
+            DEFAULT = this;
+        }
     }
     
     /**
@@ -210,6 +214,11 @@ public class StoredQuery {
                 String nm = "";
                 nm = "xmlns:wfs='" + WFS.NAMESPACE + "' ";
                 sb = new StringBuffer(sb.toString().replace("wfs:typeNames=", nm + "wfs:typeNames="));
+            }
+            if (catalog != null && sb.indexOf("xmlns:fes=")==-1 && sb.indexOf("fes:Filter")!=-1) {
+                String nm = "";
+                nm = "xmlns:fes='http://www.opengis.net/fes/2.0' ";
+                sb = new StringBuffer(sb.toString().replace("wfs:Query ", "wfs:Query " + nm));
             }
 
             //parse

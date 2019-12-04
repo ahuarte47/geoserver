@@ -456,7 +456,21 @@ public class FeatureWrapper extends BeansWrapper {
 
                 Object value = null;
                 if (property instanceof ComplexAttribute) {
-                    value = buildComplex((ComplexAttribute)property);
+                    SimpleHash simpleHash = buildComplex((ComplexAttribute)property);
+                    
+                    // add as "value" of child simple attributes.
+                    Collection<? extends Property> valueCollection = ((ComplexAttribute)property).getValue();
+                    if (valueCollection != null && valueCollection.size() > 0) {
+                        List<Object> valueList = new ArrayList<Object>();
+                        
+                        for (Property childProperty : valueCollection) {
+                            if (!(childProperty instanceof ComplexAttribute)) valueList.add(childProperty.getValue());
+                        }
+                        if (valueList.size() > 0) {
+                            simpleHash.put("value", valueList.size()==1 ? valueList.get(0) : valueList.toArray(new Object[]{}));
+                        }
+                    }
+                    value = simpleHash;
                 }
                 else if (property!=null) {
                     value = property.getValue();

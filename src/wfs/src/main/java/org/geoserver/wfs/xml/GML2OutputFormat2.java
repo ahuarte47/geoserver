@@ -32,10 +32,11 @@ import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
-import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Encoder;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
 
 public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat {
 
@@ -69,15 +70,19 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat {
         MultiHashMap ns2metas = new MultiHashMap();
         
         for (Iterator fc = featureCollections.iterator(); fc.hasNext();) {
-            SimpleFeatureCollection features = (SimpleFeatureCollection) fc.next();
-            SimpleFeatureType featureType = features.getSchema();
+            FeatureCollection features = (FeatureCollection) fc.next();
+            FeatureType featureType = features.getSchema();
+
+            if (!(featureType instanceof SimpleFeatureType)) {
+                throw new ServiceException("The GML2 output format can only be applied to simple features");
+            }
 
             //load the metadata for the feature type
             String namespaceURI = featureType.getName().getNamespaceURI();
-            FeatureTypeInfo meta = catalog.getFeatureTypeByName( namespaceURI, featureType.getTypeName() );
+            FeatureTypeInfo meta = catalog.getFeatureTypeByName( namespaceURI, ((SimpleFeatureType)featureType).getTypeName() );
             if(meta == null)
                 throw new WFSException(gft, "Could not find feature type " + namespaceURI + ":" 
-                    + featureType.getTypeName() + " in the GeoServer catalog");
+                    + ((SimpleFeatureType)featureType).getTypeName() + " in the GeoServer catalog");
 
             NamespaceInfo ns = catalog.getNamespaceByURI( namespaceURI );
             ns2metas.put( ns, meta );

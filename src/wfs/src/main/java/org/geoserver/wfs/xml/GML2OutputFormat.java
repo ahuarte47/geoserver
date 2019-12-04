@@ -46,6 +46,7 @@ import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.referencing.CRS;
 import org.geotools.wfs.WFS;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 
@@ -137,7 +138,11 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
         for (int i = 0; i < results.getFeature().size(); i++) {
             //FeatureResults features = (FeatureResults) f.next();
             FeatureCollection features = (FeatureCollection) results.getFeature().get(i);
-            SimpleFeatureType featureType = (SimpleFeatureType) features.getSchema();
+            FeatureType featureType = (FeatureType) features.getSchema();
+
+            if (!(featureType instanceof SimpleFeatureType)) {
+                throw new ServiceException("The GML2 output format can only be applied to simple features");
+            }
 
             ResourceInfo meta = catalog.getResourceByName(featureType.getName(), ResourceInfo.class);
 

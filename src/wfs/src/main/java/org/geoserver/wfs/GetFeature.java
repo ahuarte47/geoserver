@@ -551,7 +551,7 @@ public class GetFeature {
                 }
 
                 // Invert wise of rings of polygon features when the axis order of the transformation changes.
-                if (wfs.isCiteCompliant()) {
+                if (wfs.isCiteCompliant() && !request.isResultTypeHits()) {
                     features = new FeatureWiseFeatureCollection<FeatureType, Feature>(features);
                 }
                 
@@ -954,7 +954,7 @@ public class GetFeature {
         FeatureCollection<? extends FeatureType, ? extends Feature> features = source.getFeatures(gtQuery);
         
         if (features.getSchema() instanceof SimpleFeatureType) {
-            features = new FeatureSizeFeatureCollection((SimpleFeatureCollection)features, source, gtQuery);
+            features = new SimpleFeatureSizeFeatureCollection((SimpleFeatureCollection)features, source, gtQuery);
         }
         return features;
     }
