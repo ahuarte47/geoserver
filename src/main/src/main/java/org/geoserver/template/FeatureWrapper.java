@@ -292,6 +292,19 @@ public class FeatureWrapper extends BeansWrapper {
         // attributes, but at the same time, is a map keyed by name
         map.put("attributes", new SequenceMapModel(attributeMap, this));
 
+        // add child values of collection-type attributes
+        Collection<? extends Property> valueCollection = att.getValue();
+        if (valueCollection != null && valueCollection.size() > 0) {
+            List<Object> valueList = new ArrayList<Object>();
+
+            for (Property childProperty : valueCollection) {
+                if (!(childProperty instanceof ComplexAttribute)) valueList.add(childProperty.getValue());
+            }
+            if (valueList.size() > 0) {
+                map.put("value", valueList.size()==1 ? valueList.get(0) : valueList.toArray(new Object[]{}));
+            }
+        }
+
         return map;
     }
 
