@@ -464,7 +464,9 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
 
         @Override
         public String prefixedName() {
-            return featureSource.getName().getNamespaceURI() + ":" + getName();
+            return featureSource.getName().getNamespaceURI()
+                    + catalog.getGlobalSettings().getPrefixSeparator()
+                    + getName();
         }
 
         @Override

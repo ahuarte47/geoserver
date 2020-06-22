@@ -29,6 +29,7 @@ import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.feature.type.Name;
@@ -56,6 +57,10 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
 
     public CatalogFactory getFactory() {
         return delegate.getFactory();
+    }
+
+    public SettingsInfo getGlobalSettings() {
+        return delegate.getGlobalSettings();
     }
 
     public ResourcePool getResourcePool() {

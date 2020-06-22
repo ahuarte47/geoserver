@@ -141,4 +141,10 @@ public interface SettingsInfo extends Info {
     public boolean isShowModifiedTimeColumnsInAdminList();
 
     public void setShowModifiedTimeColumnsInAdminList(boolean showModifiedTimeColumnsInAdminList);
+
+    /** The default string separator of a prefixed resource name. */
+    String getPrefixSeparator();
+
+    /** Sets the default string separator of a prefixed resource name. */
+    void setPrefixSeparator(String prefixSeparator);
 }

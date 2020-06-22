@@ -74,14 +74,14 @@ public abstract class WorkspaceQualifyingCallback implements DispatcherCallback 
             WorkspaceInfo workspace, PublishedInfo layer, Operation operation, Request request);
 
     protected String qualifyName(String name, WorkspaceInfo ws) {
-
-        int colon = name.indexOf(':');
+        String prefixSeparator = catalog.getGlobalSettings().getPrefixSeparator();
+        int colon = name.indexOf(prefixSeparator);
         if (colon == -1) {
-            name = ws.getName() + ":" + name;
+            name = ws.getName() + prefixSeparator + name;
         } else {
             String prefix = name.substring(0, colon);
             if (!prefix.equalsIgnoreCase(ws.getName())) {
-                name = ws.getName() + ":" + name.substring(colon + 1);
+                name = ws.getName() + prefixSeparator + name.substring(colon + 1);
             }
         }
         return name;

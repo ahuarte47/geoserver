@@ -71,7 +71,10 @@ import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
@@ -111,6 +114,9 @@ public class CatalogImpl implements Catalog {
 
     /** extended validation switch */
     protected boolean extendedValidation = true;
+
+    /** The global settings */
+    protected SettingsInfo globalSettings = null;
 
     public CatalogImpl() {
         facade = new DefaultCatalogFacade(this);
@@ -159,6 +165,14 @@ public class CatalogImpl implements Catalog {
 
     public CatalogFactory getFactory() {
         return new CatalogFactoryImpl(this);
+    }
+
+    public SettingsInfo getGlobalSettings() {
+        if (globalSettings == null) {
+            GeoServerInfo global = GeoServerExtensions.bean(GeoServer.class).getGlobal();
+            globalSettings = global.getSettings();
+        }
+        return globalSettings;
     }
 
     // Store methods
@@ -522,7 +536,7 @@ public class CatalogImpl implements Catalog {
     @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     public <T extends ResourceInfo> T getResourceByName(String name, Class<T> clazz) {
         // check is the name is a fully qualified one
-        int colon = name.indexOf(':');
+        int colon = name.indexOf(getGlobalSettings().getPrefixSeparator());
         if (colon != -1) {
             String ns = name.substring(0, colon);
             String localName = name.substring(colon + 1);
@@ -769,7 +783,10 @@ public class CatalogImpl implements Catalog {
         if (name.getNamespaceURI() != null) {
             NamespaceInfo ns = getNamespaceByURI(name.getNamespaceURI());
             if (ns != null) {
-                return getLayerByName(ns.getPrefix() + ":" + name.getLocalPart());
+                return getLayerByName(
+                        ns.getPrefix()
+                                + getGlobalSettings().getPrefixSeparator()
+                                + name.getLocalPart());
             }
         }
 
@@ -778,7 +795,7 @@ public class CatalogImpl implements Catalog {
 
     public LayerInfo getLayerByName(String name) {
         LayerInfo result = null;
-        int colon = name.indexOf(':');
+        int colon = name.indexOf(getGlobalSettings().getPrefixSeparator());
         if (colon != -1) {
             // search by resource name
             String prefix = name.substring(0, colon);
@@ -1081,7 +1098,7 @@ public class CatalogImpl implements Catalog {
         String workspaceName = null;
         String layerGroupName = null;
 
-        int colon = name.indexOf(':');
+        int colon = name.indexOf(getGlobalSettings().getPrefixSeparator());
         if (colon == -1) {
             // if there is no prefix, try the default workspace
             WorkspaceInfo defaultWs = getDefaultWorkspace();
@@ -1431,7 +1448,7 @@ public class CatalogImpl implements Catalog {
 
     public StyleInfo getStyleByName(String name) {
         StyleInfo result = null;
-        int colon = name.indexOf(':');
+        int colon = name.indexOf(getGlobalSettings().getPrefixSeparator());
         if (colon != -1) {
             // search by resource name
             String prefix = name.substring(0, colon);
@@ -1875,6 +1892,7 @@ public class CatalogImpl implements Catalog {
     }
 
     protected LayerGroupInfo resolve(LayerGroupInfo layerGroup) {
+        ((LayerGroupInfoImpl) layerGroup).setCatalog(this);
         resolveCollections(layerGroup);
         return layerGroup;
     }

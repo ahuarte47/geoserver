@@ -155,7 +155,8 @@ public abstract class WfsXmlWriter {
 
         // write the element
         if (prefix != null) {
-            writer.write("<" + prefix + ":" + name);
+            writer.write(
+                    "<" + prefix + wfs.getGeoServer().getSettings().getPrefixSeparator() + name);
         } else {
             writer.write("<" + name);
         }
@@ -180,7 +181,12 @@ public abstract class WfsXmlWriter {
     public void closeTag(String prefix, String name) throws IOException {
         // write the element
         if (prefix != null) {
-            writer.write("</" + prefix + ":" + name + ">");
+            writer.write(
+                    "</"
+                            + prefix
+                            + wfs.getGeoServer().getSettings().getPrefixSeparator()
+                            + name
+                            + ">");
         } else {
             writer.write("</" + name + ">");
         }

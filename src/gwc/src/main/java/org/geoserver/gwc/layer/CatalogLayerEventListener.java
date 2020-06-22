@@ -474,8 +474,14 @@ public class CatalogLayerEventListener implements CatalogListener {
         try {
             while (layers.hasNext()) {
                 LayerInfo layer = layers.next();
-                String oldName = oldWorkspaceName + ":" + layer.getName();
-                String newName = newWorkspaceName + ":" + layer.getName();
+                String oldName =
+                        oldWorkspaceName
+                                + catalog.getGlobalSettings().getPrefixSeparator()
+                                + layer.getName();
+                String newName =
+                        newWorkspaceName
+                                + catalog.getGlobalSettings().getPrefixSeparator()
+                                + layer.getName();
 
                 // see if the tile layer existed and it is one that we can rename (admin
                 // could have overwritten it with a direct layer in geowebcache.xml)
@@ -541,8 +547,14 @@ public class CatalogLayerEventListener implements CatalogListener {
         try {
             while (groups.hasNext()) {
                 LayerGroupInfo group = groups.next();
-                String oldName = oldWorkspaceName + ":" + group.getName();
-                String newName = newWorkspaceName + ":" + group.getName();
+                String oldName =
+                        oldWorkspaceName
+                                + catalog.getGlobalSettings().getPrefixSeparator()
+                                + group.getName();
+                String newName =
+                        newWorkspaceName
+                                + catalog.getGlobalSettings().getPrefixSeparator()
+                                + group.getName();
 
                 // see if the tile layer existed and it is one that we can rename (admin
                 // could have overwritten it with a direct layer in geowebcache.xml)
@@ -610,7 +622,10 @@ public class CatalogLayerEventListener implements CatalogListener {
             } else {
                 oldLayerName = resourceInfo.getName();
             }
-            oldLayerName = oldNamespace.getPrefix() + ":" + oldLayerName;
+            oldLayerName =
+                    oldNamespace.getPrefix()
+                            + catalog.getGlobalSettings().getPrefixSeparator()
+                            + oldLayerName;
         } else {
             // it's a layer group, no need to worry about namespace
             oldLayerName = tileLayerInfo.getName();

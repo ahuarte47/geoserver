@@ -712,7 +712,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         }
 
         String nname = n.getNodeName();
-        int idx = nname.indexOf(':');
+        int idx = nname.indexOf(wms.getCatalog().getGlobalSettings().getPrefixSeparator());
 
         if (idx == -1) {
             return false;

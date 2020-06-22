@@ -16,6 +16,7 @@
       </map>
     </metadata>
     <localWorkspaceIncludesPrefix>false</localWorkspaceIncludesPrefix>
+    <prefixSeparator>:</prefixSeparator>
   </settings>
   <jai>
     <allowInterpolation>false</allowInterpolation>

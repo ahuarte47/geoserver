@@ -725,7 +725,8 @@ public class CatalogConfiguration implements TileLayerConfiguration {
      */
     public static String removeWorkspacePrefix(String layerName, Catalog catalog) {
         // checking if we have an workspace prefix
-        int workspaceSeparatorIndex = layerName.indexOf(":");
+        int workspaceSeparatorIndex =
+                layerName.indexOf(catalog.getGlobalSettings().getPrefixSeparator());
         if (workspaceSeparatorIndex >= 0 && workspaceSeparatorIndex + 1 < layerName.length()) {
             // let's check if we really have a workspace name as prefix
             String workspaceName = layerName.substring(0, workspaceSeparatorIndex);

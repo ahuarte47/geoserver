@@ -82,7 +82,7 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat {
                         gft,
                         "Could not find feature type "
                                 + namespaceURI
-                                + ":"
+                                + catalog.getGlobalSettings().getPrefixSeparator()
                                 + featureType.getTypeName()
                                 + " in the GeoServer catalog");
 

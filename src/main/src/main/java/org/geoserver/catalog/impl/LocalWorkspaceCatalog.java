@@ -79,7 +79,11 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     public FeatureTypeInfo getFeatureTypeByName(String name) {
         FeatureTypeInfo ft = null;
         if (LocalWorkspace.get() != null) {
-            ft = super.getFeatureTypeByName(LocalWorkspace.get().getName() + ":" + name);
+            ft =
+                    super.getFeatureTypeByName(
+                            LocalWorkspace.get().getName()
+                                    + geoServer.getGlobal().getPrefixSeparator()
+                                    + name);
         }
         if (ft == null) {
             ft = super.getFeatureTypeByName(name);
@@ -207,7 +211,11 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     public CoverageInfo getCoverageByName(String name) {
         CoverageInfo ci = null;
         if (LocalWorkspace.get() != null) {
-            ci = super.getCoverageByName(LocalWorkspace.get().getName() + ":" + name);
+            ci =
+                    super.getCoverageByName(
+                            LocalWorkspace.get().getName()
+                                    + geoServer.getGlobal().getPrefixSeparator()
+                                    + name);
         }
         if (ci == null) {
             ci = super.getCoverageByName(name);
@@ -235,11 +243,12 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     public LayerInfo getLayerByName(String name) {
         if (LocalWorkspace.get() != null) {
             String wsName = LocalWorkspace.get().getName();
+            String prefixSeparator = geoServer.getGlobal().getPrefixSeparator();
 
             // prefix the unqualified name
-            if (name.contains(":")) {
+            if (name.contains(prefixSeparator)) {
                 // name already prefixed, ensure it is prefixed with the correct one
-                if (name.startsWith(wsName + ":")) {
+                if (name.startsWith(wsName + prefixSeparator)) {
                     // good to go, just pass call through
                     return wrap(super.getLayerByName(name));
                 }
@@ -266,7 +275,10 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     @Override
     public List<LayerInfo> getLayers() {
         if (useNameDequalifyingProxy()) {
-            return NameDequalifyingProxy.createList(super.getLayers(), LayerInfo.class);
+            return NameDequalifyingProxy.createList(
+                    super.getLayers(),
+                    LayerInfo.class,
+                    geoServer.getCatalog().getGlobalSettings().getPrefixSeparator());
         }
         return super.getLayers();
     }
@@ -341,11 +353,12 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     public LayerGroupInfo getLayerGroupByName(String name) {
         if (LocalWorkspace.get() != null) {
             String wsName = LocalWorkspace.get().getName();
+            String prefixSeparator = geoServer.getGlobal().getPrefixSeparator();
 
             // prefix the unqualified name
-            if (name.contains(":")) {
+            if (name.contains(prefixSeparator)) {
                 // name already prefixed, ensure it is prefixed with the correct one
-                if (name.startsWith(wsName + ":")) {
+                if (name.startsWith(wsName + prefixSeparator)) {
                     // good to go, just pass call through
                     LayerGroupInfo layerGroup = super.getLayerGroupByName(name);
                     if (layerGroup != null) {
@@ -432,7 +445,8 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
             return null;
         }
         if (useNameDequalifyingProxy()) {
-            return NameDequalifyingProxy.create(obj, clazz);
+            return NameDequalifyingProxy.create(
+                    obj, clazz, geoServer.getGlobal().getPrefixSeparator());
         }
         return obj;
     }
@@ -443,7 +457,8 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
     List<LayerGroupInfo> wrap(List<LayerGroupInfo> layerGroups) {
         if (useNameDequalifyingProxy()) {
-            return NameDequalifyingProxy.createList(layerGroups, LayerGroupInfo.class);
+            return NameDequalifyingProxy.createList(
+                    layerGroups, LayerGroupInfo.class, geoServer.getGlobal().getPrefixSeparator());
         }
         return layerGroups;
     }
@@ -451,9 +466,11 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     static class NameDequalifyingProxy implements WrappingProxy, Serializable {
 
         Object object;
+        String prefixSeparator;
 
-        NameDequalifyingProxy(Object object) {
+        NameDequalifyingProxy(Object object, String prefixSeparator) {
             this.object = object;
+            this.prefixSeparator = prefixSeparator;
         }
 
         public Object getProxyObject() {
@@ -466,25 +483,27 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
                     || "getPrefixedName".equals(method.getName())
                     || "getName".equals(method.getName())) {
                 String val = (String) method.invoke(object, args);
-                if (val == null || val.indexOf(':') == -1) {
+                if (val == null || val.indexOf(prefixSeparator) == -1) {
                     return val;
                 }
 
-                return val.split(":")[1];
+                return val.split(prefixSeparator)[1];
             }
 
             return method.invoke(object, args);
         }
 
-        public static <T> T create(T object, Class<T> clazz) {
-            return ProxyUtils.createProxy(object, clazz, new NameDequalifyingProxy(object));
+        public static <T> T create(T object, Class<T> clazz, String prefixSeparator) {
+            return ProxyUtils.createProxy(
+                    object, clazz, new NameDequalifyingProxy(object, prefixSeparator));
         }
 
-        public static <T> List<T> createList(List<T> object, Class<T> clazz) {
+        public static <T> List<T> createList(
+                List<T> object, Class<T> clazz, String prefixSeparator) {
             return new ProxyList(object, clazz) {
                 @Override
                 protected <T> T createProxy(T proxyObject, Class<T> proxyInterface) {
-                    return create(proxyObject, proxyInterface);
+                    return create(proxyObject, proxyInterface, prefixSeparator);
                 }
 
                 @Override
@@ -534,7 +553,12 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         CloseableIterator<T> iterator = delegate.list(of, filter, offset, count, sortBy);
         if (iterator.hasNext() && useNameDequalifyingProxy()) {
             return CloseableIteratorAdapter.transform(
-                    iterator, obj -> obj == null ? null : NameDequalifyingProxy.create(obj, of));
+                    iterator,
+                    obj ->
+                            obj == null
+                                    ? null
+                                    : NameDequalifyingProxy.create(
+                                            obj, of, geoServer.getGlobal().getPrefixSeparator()));
         }
         return iterator;
     }

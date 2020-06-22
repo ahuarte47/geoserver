@@ -180,7 +180,11 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
                 // check it's there
                 LOGGER.info(threadId + "Checking " + typeName);
                 String resourcePath =
-                        RestBaseController.ROOT_PATH + "/layers/" + workspace + ":" + typeName;
+                        RestBaseController.ROOT_PATH
+                                + "/layers/"
+                                + workspace
+                                + catalog.getGlobalSettings().getPrefixSeparator()
+                                + typeName;
                 response = getAsServletResponse(resourcePath + ".xml");
                 assertEquals(200, response.getStatus());
 

@@ -154,7 +154,7 @@ public class CatalogStyleChangeListener implements CatalogListener {
 
     private String getPrefixedName(String workspace, String name) {
         if (workspace != null) {
-            return workspace + ":" + name;
+            return workspace + catalog.getGlobalSettings().getPrefixSeparator() + name;
         } else {
             return name;
         }
@@ -196,8 +196,14 @@ public class CatalogStyleChangeListener implements CatalogListener {
         try {
             while (styles.hasNext()) {
                 StyleInfo style = styles.next();
-                String oldStyleName = oldWorkspaceName + ":" + style.getName();
-                String newStyleName = newWorkspaceName + ":" + style.getName();
+                String oldStyleName =
+                        oldWorkspaceName
+                                + catalog.getGlobalSettings().getPrefixSeparator()
+                                + style.getName();
+                String newStyleName =
+                        newWorkspaceName
+                                + catalog.getGlobalSettings().getPrefixSeparator()
+                                + style.getName();
 
                 handleStyleRenamed(oldStyleName, newStyleName);
             }

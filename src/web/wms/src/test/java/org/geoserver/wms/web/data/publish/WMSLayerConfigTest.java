@@ -150,7 +150,10 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         AttributeModifier mod = (AttributeModifier) img.getBehaviors().get(0);
         assertTrue(mod.toString().contains("wms?REQUEST=GetLegendGraphic"));
         assertTrue(mod.toString().contains("style=cite:Ponds"));
-        String ft = layer.getResource().getNamespace().getPrefix() + ":" + layer.getName();
+        String ft =
+                layer.getResource().getNamespace().getPrefix()
+                        + catalog.getGlobalSettings().getPrefixSeparator()
+                        + layer.getName();
         assertTrue(mod.toString().contains("layer=" + ft));
         assertFalse(cascadedControlsVisible(tester));
     }

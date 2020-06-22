@@ -31,6 +31,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.feature.type.Name;
@@ -576,6 +577,10 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
 
     public CatalogFactory getFactory() {
         return delegate.getFactory();
+    }
+
+    public SettingsInfo getGlobalSettings() {
+        return delegate.getGlobalSettings();
     }
 
     public Collection<CatalogListener> getListeners() {

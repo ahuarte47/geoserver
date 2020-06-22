@@ -80,6 +80,7 @@ public class WMSLoader extends LegacyServiceLoader<WMSInfo> {
         // layers accessible to the current user
         if (catalog instanceof Wrapper) catalog = ((Wrapper) catalog).unwrap(Catalog.class);
         CatalogFactory factory = catalog.getFactory();
+        String prefixSeparator = catalog.getGlobalSettings().getPrefixSeparator();
 
         List<Map> baseMaps = (List<Map>) props.get("BaseMapGroups");
         if (baseMaps != null) {
@@ -92,8 +93,8 @@ public class WMSLoader extends LegacyServiceLoader<WMSInfo> {
                 List<String> layerNames = (List) baseMap.get("baseMapLayers");
                 for (String layerName : layerNames) {
                     ResourceInfo resource = null;
-                    if (layerName.contains(":")) {
-                        String[] qname = layerName.split(":");
+                    if (layerName.contains(prefixSeparator)) {
+                        String[] qname = layerName.split(prefixSeparator);
                         resource =
                                 catalog.getResourceByName(qname[0], qname[1], ResourceInfo.class);
                     } else {

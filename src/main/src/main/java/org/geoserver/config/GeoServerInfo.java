@@ -181,4 +181,10 @@ public interface GeoServerInfo extends Info {
 
     /** Sets if Per-workspace Stores Queries are activated. */
     void setAllowStoredQueriesPerWorkspace(Boolean allowStoredQueriesPerWorkspace);
+
+    /** The default string separator of a prefixed resource name. */
+    String getPrefixSeparator();
+
+    /** Sets the default string separator of a prefixed resource name. */
+    void setPrefixSeparator(String prefixSeparator);
 }

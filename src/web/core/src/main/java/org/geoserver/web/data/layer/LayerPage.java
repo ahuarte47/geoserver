@@ -146,7 +146,8 @@ public class LayerPage extends GeoServerSecuredPage {
         IModel<String> layerNameModel = (IModel<String>) NAME.getModel(model);
         String wsName = getWorkspaceNameFromLayerInfo(model.getObject());
         String layerName = layerNameModel.getObject();
-        String linkTitle = wsName + ":" + layerName;
+        String linkTitle =
+                wsName + getCatalog().getGlobalSettings().getPrefixSeparator() + layerName;
         return new SimpleBookmarkableLink(
                 id,
                 ResourceConfigurationPage.class,

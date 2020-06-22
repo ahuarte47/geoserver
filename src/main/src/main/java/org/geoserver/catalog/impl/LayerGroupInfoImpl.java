@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupHelper;
@@ -84,6 +85,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     protected Date dateModified;
 
+    protected transient Catalog catalog;
+
     @Override
     public List<KeywordInfo> getKeywords() {
         return keywords;
@@ -104,6 +107,19 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         publishables = new ArrayList<PublishedInfo>();
         styles = new ArrayList<StyleInfo>();
         metadata = new MetadataMap();
+    }
+
+    public LayerGroupInfoImpl(Catalog catalog) {
+        this();
+        this.catalog = catalog;
+    }
+
+    public Catalog getCatalog() {
+        return catalog;
+    }
+
+    public void setCatalog(Catalog catalog) {
+        this.catalog = catalog;
     }
 
     @Override
@@ -208,7 +224,9 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     @Override
     public String prefixedName() {
-        return workspace != null ? workspace.getName() + ":" + name : name;
+        return workspace != null
+                ? workspace.getName() + catalog.getGlobalSettings().getPrefixSeparator() + name
+                : name;
     }
 
     @Override

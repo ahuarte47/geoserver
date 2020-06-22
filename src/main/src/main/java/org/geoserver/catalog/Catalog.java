@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
@@ -150,6 +151,9 @@ public interface Catalog extends CatalogInfo {
 
     /** The factory used to create catalog objects. */
     CatalogFactory getFactory();
+
+    /** The global settings. */
+    SettingsInfo getGlobalSettings();
 
     /** Adds a new store. */
     void add(StoreInfo store);

@@ -103,7 +103,7 @@ class LayerGroupContainmentCache {
     }
 
     private void addGroupInfo(LayerGroupInfo lg) {
-        LayerGroupSummary groupData = new LayerGroupSummary(lg);
+        LayerGroupSummary groupData = new LayerGroupSummary(catalog, lg);
         groupCache.put(lg.getId(), groupData);
         lg.getLayers()
                 .stream()
@@ -138,7 +138,7 @@ class LayerGroupContainmentCache {
         // this group does not contain anything anymore, remove from containment
         for (LayerGroupSummary d : groupCache.values()) {
             // will be removed by equality
-            d.containerGroups.remove(new LayerGroupSummary(lg));
+            d.containerGroups.remove(new LayerGroupSummary(catalog, lg));
         }
     }
 
@@ -206,12 +206,15 @@ class LayerGroupContainmentCache {
 
         Set<LayerGroupSummary> containerGroups;
 
-        LayerGroupSummary(LayerGroupInfo lg) {
+        Catalog catalog;
+
+        LayerGroupSummary(Catalog catalog, LayerGroupInfo lg) {
             this.id = lg.getId();
             this.workspace = lg.getWorkspace() != null ? lg.getWorkspace().getName() : null;
             this.name = lg.getName();
             this.mode = lg.getMode();
             containerGroups = CONCURRENT_SET_BUILDER.apply(null);
+            this.catalog = catalog;
         }
 
         LayerGroupSummary(LayerGroupSummary other) {
@@ -220,6 +223,7 @@ class LayerGroupContainmentCache {
             this.name = other.name;
             this.mode = other.mode;
             containerGroups = other.containerGroups;
+            this.catalog = other.catalog;
         }
 
         public String getId() {
@@ -287,7 +291,7 @@ class LayerGroupContainmentCache {
             if (workspace == null) {
                 return name;
             } else {
-                return workspace + ":" + name;
+                return workspace + catalog.getGlobalSettings().getPrefixSeparator() + name;
             }
         }
     }

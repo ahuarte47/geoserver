@@ -54,7 +54,7 @@ public class XSQNameBinding extends org.geotools.xs.bindings.XSQNameBinding {
         }
 
         String s = (String) value;
-        int i = s.indexOf(':');
+        int i = s.indexOf(data.getGlobalSettings().getPrefixSeparator());
 
         if (i != -1) {
             String prefix = s.substring(0, i);

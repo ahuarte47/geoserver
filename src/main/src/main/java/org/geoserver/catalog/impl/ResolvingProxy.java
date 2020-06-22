@@ -80,8 +80,9 @@ public class ResolvingProxy extends ProxyBase {
 
                     T resolved = (T) catalog.getStore(ref, StoreInfo.class);
                     if (resolved == null) {
-                        if (ref.indexOf(":") > 0) {
-                            String[] qualifiedName = ref.split(":");
+                        String prefixSeparator = catalog.getGlobalSettings().getPrefixSeparator();
+                        if (ref.indexOf(prefixSeparator) > 0) {
+                            String[] qualifiedName = ref.split(prefixSeparator);
                             resolved =
                                     (T)
                                             catalog.getStoreByName(

@@ -19,4 +19,5 @@
   <verboseExceptions>true</verboseExceptions>
   <updateSequence>1</updateSequence>
   <featureTypeCacheSize>0</featureTypeCacheSize>
+  <prefixSeparator>:</prefixSeparator>
 </global>

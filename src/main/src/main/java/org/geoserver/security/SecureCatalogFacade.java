@@ -9,6 +9,7 @@ import java.util.List;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
@@ -197,6 +198,10 @@ class SecureCatalogFacade implements CatalogFacade {
 
     public CatalogFactory getFactory() {
         return catalog.getFactory();
+    }
+
+    public SettingsInfo getGlobalSettings() {
+        return catalog.getGlobalSettings();
     }
 
     public <T extends StoreInfo> T getStore(String id, Class<T> clazz) {

@@ -339,7 +339,10 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
         }
 
         if (catalog.getFeatureTypeByName(namespaceURI, localPart) == null) {
-            String name = qName.getPrefix() + ":" + qName.getLocalPart();
+            String name =
+                    qName.getPrefix()
+                            + catalog.getGlobalSettings().getPrefixSeparator()
+                            + qName.getLocalPart();
             throw new WFSException(
                     "Feature type " + name + " unknown", "InvalidParameterValue", "typeName");
         }

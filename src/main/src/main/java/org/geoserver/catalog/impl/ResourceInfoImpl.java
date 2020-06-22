@@ -141,7 +141,9 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     }
 
     public String prefixedName() {
-        return getNamespace().getPrefix() + ":" + getName();
+        return getNamespace().getPrefix()
+                + getCatalog().getGlobalSettings().getPrefixSeparator()
+                + getName();
     }
 
     public String getTitle() {

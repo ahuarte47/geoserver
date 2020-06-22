@@ -164,7 +164,11 @@ public class DescribeCoverageTransformer extends TransformerBase {
             element("ows:Title", ci.getTitle());
             element("ows:Abstract", ci.getDescription());
             handleKeywords(ci.getKeywords());
-            element("wcs:Identifier", ci.getStore().getWorkspace().getName() + ":" + ci.getName());
+            element(
+                    "wcs:Identifier",
+                    ci.getStore().getWorkspace().getName()
+                            + catalog.getGlobalSettings().getPrefixSeparator()
+                            + ci.getName());
             handleMetadataLinks(ci.getMetadataLinks(), "simple");
             handleDomain(ci);
             handleRange(ci);

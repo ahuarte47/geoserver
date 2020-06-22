@@ -210,7 +210,8 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         if (layer.getTitle() == null) {
             return null;
         }
-        String[] nameparts = layer.getTitle().split(":");
+        String[] nameparts =
+                layer.getTitle().split(catalog.getGlobalSettings().getPrefixSeparator());
 
         ResourceInfo resource =
                 nameparts.length > 1

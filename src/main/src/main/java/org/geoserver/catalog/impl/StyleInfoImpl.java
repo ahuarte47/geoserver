@@ -194,7 +194,9 @@ public class StyleInfoImpl implements StyleInfo {
     @Override
     public String prefixedName() {
         if (workspace != null) {
-            return workspace.getName() + ":" + getName();
+            return workspace.getName()
+                    + catalog.getGlobalSettings().getPrefixSeparator()
+                    + getName();
         } else {
             return getName();
         }

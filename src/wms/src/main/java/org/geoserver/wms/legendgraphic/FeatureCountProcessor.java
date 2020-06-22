@@ -349,7 +349,9 @@ class FeatureCountProcessor {
                     request.getWms().getCatalog().getNamespaceByURI(name.getNamespaceURI());
             final String localName = name.getLocalPart();
             if (ns != null) {
-                return ns.getPrefix() + ":" + localName;
+                return ns.getPrefix()
+                        + request.getWms().getCatalog().getGlobalSettings().getPrefixSeparator()
+                        + localName;
             } else {
                 return localName;
             }

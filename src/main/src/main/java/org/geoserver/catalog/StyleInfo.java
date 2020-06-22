@@ -87,7 +87,7 @@ public interface StyleInfo extends CatalogInfo {
      * <p>If a workspace is set this method returns:
      *
      * <pre>
-     *   getWorkspace().getName() + ":" + getName();
+     *   getWorkspace().getName() + getCatalog().getGlobalSettings().getPrefixSeparator() + getName();
      * </pre>
      *
      * Otherwise it simply returns:

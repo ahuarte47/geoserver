@@ -282,8 +282,12 @@ class WPSExecuteTransformer extends TransformerBase {
 
             // if the layer name is qualfiied we should include a namespace mapping on the
             // GetFeature request
-            if (catalog != null && vector.layerName != null && vector.layerName.contains(":")) {
-                String prefix = vector.layerName.split(":")[0];
+            if (catalog != null
+                    && vector.layerName != null
+                    && vector.layerName.contains(
+                            catalog.getGlobalSettings().getPrefixSeparator())) {
+                String prefix =
+                        vector.layerName.split(catalog.getGlobalSettings().getPrefixSeparator())[0];
                 NamespaceInfo ns = catalog.getNamespaceByPrefix(prefix);
                 if (ns != null) {
                     atts.addAttribute("", "", "xmlns:" + prefix, null, ns.getURI());

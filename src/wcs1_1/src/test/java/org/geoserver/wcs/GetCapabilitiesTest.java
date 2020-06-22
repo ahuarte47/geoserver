@@ -450,7 +450,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         String xpathBase =
                 "//wcs:CoverageSummary[wcs:Identifier = '"
                         + TASMANIA_DEM.getPrefix()
-                        + ":"
+                        + catalog.getGlobalSettings().getPrefixSeparator()
                         + TASMANIA_DEM.getLocalPart()
                         + "']/ows:Metadata";
         assertXpathEvaluatesTo("http://www.geoserver.org", xpathBase + "/@about", dom);
@@ -475,7 +475,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         String xpathBase =
                 "//wcs:CoverageSummary[wcs:Identifier = '"
                         + TASMANIA_DEM.getPrefix()
-                        + ":"
+                        + catalog.getGlobalSettings().getPrefixSeparator()
                         + TASMANIA_DEM.getLocalPart()
                         + "']/ows:Metadata";
         assertXpathEvaluatesTo("http://www.geoserver.org", xpathBase + "/@about", dom);

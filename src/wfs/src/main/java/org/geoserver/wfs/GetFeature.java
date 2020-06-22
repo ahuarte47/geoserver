@@ -1122,7 +1122,7 @@ public class GetFeature {
         for (QName qName : q.getTypeNames()) {
             typeNames
                     .append(qName.getPrefix())
-                    .append(":")
+                    .append(catalog.getGlobalSettings().getPrefixSeparator())
                     .append(qName.getLocalPart())
                     .append(",");
         }
@@ -1648,11 +1648,12 @@ public class GetFeature {
 
     boolean isGmlBoundedBy(PropertyName name) {
         String propertyName = name.getPropertyName();
+        String prefixSeparator = catalog.getGlobalSettings().getPrefixSeparator();
 
         // we want two non empty parts
-        int idx = propertyName.indexOf(':');
-        if (idx > 1 && propertyName.indexOf(":") < propertyName.length() - 1) {
-            String[] split = propertyName.split("\\:");
+        int idx = propertyName.indexOf(prefixSeparator);
+        if (idx > 1 && propertyName.indexOf(prefixSeparator) < propertyName.length() - 1) {
+            String[] split = propertyName.split("\\" + prefixSeparator);
             String prefix = split[0];
             String localName = split[1];
             if (!"boundedBy".equals(localName)) {
@@ -1684,8 +1685,8 @@ public class GetFeature {
         if (path.contains("/")) {
             return filterFactory.property(path, namespaceContext);
         } else {
-            if (path.contains(":")) {
-                int i = path.indexOf(":");
+            if (path.contains(catalog.getGlobalSettings().getPrefixSeparator())) {
+                int i = path.indexOf(catalog.getGlobalSettings().getPrefixSeparator());
                 return filterFactory.property(
                         new NameImpl(
                                 namespaceContext.getURI(path.substring(0, i)),

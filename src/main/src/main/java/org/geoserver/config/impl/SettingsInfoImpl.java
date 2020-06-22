@@ -46,6 +46,8 @@ public class SettingsInfoImpl implements SettingsInfo {
 
     private boolean showModifiedTimeColumnsInAdminList = false;
 
+    protected String prefixSeparator = ":";
+
     @Override
     public String getId() {
         return id;
@@ -188,6 +190,7 @@ public class SettingsInfoImpl implements SettingsInfo {
         result = prime * result + ((title == null) ? 0 : title.hashCode());
         result = prime * result + (verbose ? 1231 : 1237);
         result = prime * result + (verboseExceptions ? 1231 : 1237);
+        result = prime * result + ((prefixSeparator == null) ? 0 : prefixSeparator.hashCode());
         return result;
     }
 
@@ -222,6 +225,9 @@ public class SettingsInfoImpl implements SettingsInfo {
         } else if (!title.equals(other.getTitle())) return false;
         if (verbose != other.isVerbose()) return false;
         if (verboseExceptions != other.isVerboseExceptions()) return false;
+        if (prefixSeparator == null) {
+            if (other.getPrefixSeparator() != null) return false;
+        } else if (!prefixSeparator.equals(other.getPrefixSeparator())) return false;
 
         return true;
     }
@@ -267,5 +273,15 @@ public class SettingsInfoImpl implements SettingsInfo {
     @Override
     public void setShowModifiedTimeColumnsInAdminList(boolean showModifiedTimeColumnsInAdminList) {
         this.showModifiedTimeColumnsInAdminList = showModifiedTimeColumnsInAdminList;
+    }
+
+    @Override
+    public String getPrefixSeparator() {
+        return prefixSeparator != null ? prefixSeparator : ":";
+    }
+
+    @Override
+    public void setPrefixSeparator(String prefixSeparator) {
+        this.prefixSeparator = prefixSeparator;
     }
 }

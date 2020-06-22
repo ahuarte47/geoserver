@@ -30,7 +30,7 @@ public class TypeNameKvpParser extends QNameKvpParser {
     }
 
     protected Object parseToken(String token) throws Exception {
-        int i = token.indexOf(':');
+        int i = token.indexOf(geoserver.getGlobal().getPrefixSeparator());
 
         if (i != -1 || geoserver.getService(WFSInfo.class).isCiteCompliant()) {
             return super.parseToken(token);

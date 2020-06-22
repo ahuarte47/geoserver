@@ -84,7 +84,7 @@ public interface ResourceInfo extends CatalogInfo {
      * <p>This method is a convenience for:
      *
      * <pre>
-     * return getNamespace().getPrefix() + ":" + getName();
+     * return getNamespace().getPrefix() + getCatalog().getGlobalSettings().getPrefixSeparator() + getName();
      * </pre>
      */
     String prefixedName();

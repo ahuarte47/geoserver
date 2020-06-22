@@ -129,7 +129,11 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
                 PropertyName propertyName = null;
 
                 if (name.getPrefix() != null && !"".equals(name.getPrefix())) {
-                    propertyName = ff.property(name.getPrefix() + ":" + name.getLocalPart());
+                    propertyName =
+                            ff.property(
+                                    name.getPrefix()
+                                            + geoServer.getGlobal().getPrefixSeparator()
+                                            + name.getLocalPart());
                 } else {
                     propertyName = ff.property(name.getLocalPart());
                 }

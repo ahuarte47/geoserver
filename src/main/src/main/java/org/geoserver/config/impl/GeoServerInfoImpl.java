@@ -445,4 +445,14 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     public void setWebUIMode(WebUIMode webUIMode) {
         this.webUIMode = webUIMode;
     }
+
+    @Override
+    public String getPrefixSeparator() {
+        return getSettings().getPrefixSeparator();
+    }
+
+    @Override
+    public void setPrefixSeparator(String prefixSeparator) {
+        getSettings().setPrefixSeparator(prefixSeparator);
+    }
 }

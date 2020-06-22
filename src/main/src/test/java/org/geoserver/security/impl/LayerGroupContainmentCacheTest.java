@@ -171,7 +171,7 @@ public class LayerGroupContainmentCacheTest {
         // nature
         Collection<LayerGroupSummary> natureContainers = cc.getContainerGroupsFor(nature);
         assertEquals(1, natureContainers.size());
-        assertThat(natureContainers, contains(new LayerGroupSummary(container)));
+        assertThat(natureContainers, contains(new LayerGroupSummary(catalog, container)));
         LayerGroupSummary summary = natureContainers.iterator().next();
         assertNull(summary.getWorkspace());
         assertEquals(CONTAINER_GROUP, summary.getName());

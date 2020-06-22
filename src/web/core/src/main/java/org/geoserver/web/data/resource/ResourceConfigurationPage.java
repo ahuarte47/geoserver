@@ -65,7 +65,12 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
                 // with a layer page open in another tab/window
                 throw new RuntimeException("Could not find workspace " + workspaceName);
             }
-            layer = getCatalog().getLayerByName(ns.getName() + ":" + layerName);
+            layer =
+                    getCatalog()
+                            .getLayerByName(
+                                    ns.getName()
+                                            + getCatalog().getGlobalSettings().getPrefixSeparator()
+                                            + layerName);
         } else {
             layer = getCatalog().getLayerByName(layerName);
         }

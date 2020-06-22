@@ -262,7 +262,9 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
      */
     private String getStyleName(StyleInfo styleInfo) {
         return styleInfo.getWorkspace() != null
-                ? (styleInfo.getWorkspace().getName() + ":" + styleInfo.getName())
+                ? (styleInfo.getWorkspace().getName()
+                        + catalog.getGlobalSettings().getPrefixSeparator()
+                        + styleInfo.getName())
                 : styleInfo.getName();
     }
 

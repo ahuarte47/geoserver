@@ -400,7 +400,15 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         List<StyleInfo> result = new ArrayList<>();
         for (PublishedInfo pi : contents) {
             if (pi instanceof LayerInfo) {
-                StyleInfo style = buildStyle(pi.prefixedName().replace(':', '-') + "-style", null);
+                StyleInfo style =
+                        buildStyle(
+                                pi.prefixedName()
+                                                .replace(
+                                                        catalog.getGlobalSettings()
+                                                                .getPrefixSeparator(),
+                                                        "-")
+                                        + "-style",
+                                null);
                 result.add(style);
             } else {
                 // group

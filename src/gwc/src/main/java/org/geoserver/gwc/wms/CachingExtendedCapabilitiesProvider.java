@@ -118,7 +118,9 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
             if (localWorkspace == null) {
                 nsPrefix = null;
             } else {
-                nsPrefix = localWorkspace.getName() + ":";
+                nsPrefix =
+                        localWorkspace.getName()
+                                + gwc.getCatalog().getGlobalSettings().getPrefixSeparator();
             }
         }
 

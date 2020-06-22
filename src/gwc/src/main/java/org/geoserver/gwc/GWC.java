@@ -744,7 +744,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         // GEOS-9431 acquire prefixed name if not prefixed already
         final String getPrefixedName =
-                (!layerName.contains(":")) ? getPrefixedName(layerName) : layerName;
+                (!layerName.contains(catalog.getGlobalSettings().getPrefixSeparator()))
+                        ? getPrefixedName(layerName)
+                        : layerName;
 
         if (!tld.layerExists(getPrefixedName)) {
             requestMistmatchTarget.append("not a tile layer");
@@ -1156,7 +1158,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                     @Override
                     public boolean apply(GeoServerTileLayer tileLayer) {
                         String layerName = tileLayer.getName();
-                        if (-1 == layerName.indexOf(':')) {
+                        if (-1
+                                == layerName.indexOf(
+                                        catalog.getGlobalSettings().getPrefixSeparator())) {
                             return false;
                         }
                         LayerInfo layerInfo = catalog.getLayerByName(layerName);

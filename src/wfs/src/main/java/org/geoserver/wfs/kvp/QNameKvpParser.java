@@ -51,7 +51,7 @@ public class QNameKvpParser extends FlatKvpParser {
      * the catalog.
      */
     protected Object parseToken(String token) throws Exception {
-        int i = token.indexOf(':');
+        int i = token.indexOf(catalog.getGlobalSettings().getPrefixSeparator());
 
         if (i != -1) {
             String prefix = token.substring(0, i);

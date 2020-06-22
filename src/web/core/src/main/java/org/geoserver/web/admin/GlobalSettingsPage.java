@@ -115,6 +115,10 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(new CheckBox("xmlExternalEntitiesEnabled"));
 
+        form.add(
+                new TextField<String>(
+                        "prefixSeparator", new PropertyModel<>(settingsModel, "prefixSeparator")));
+
         form.add(new TextField<Integer>("featureTypeCacheSize").add(RangeValidator.minimum(0)));
 
         IModel<String> lockProviderModel =

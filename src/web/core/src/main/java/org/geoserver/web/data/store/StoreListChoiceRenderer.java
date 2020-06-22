@@ -16,7 +16,9 @@ import org.geoserver.catalog.StoreInfo;
 public class StoreListChoiceRenderer extends ChoiceRenderer<StoreInfo> {
 
     public Object getDisplayValue(StoreInfo info) {
-        return new StringBuilder(info.getWorkspace().getName()).append(':').append(info.getName());
+        return new StringBuilder(info.getWorkspace().getName())
+                .append(info.getCatalog().getGlobalSettings().getPrefixSeparator())
+                .append(info.getName());
     }
 
     public String getIdValue(StoreInfo store, int arg1) {

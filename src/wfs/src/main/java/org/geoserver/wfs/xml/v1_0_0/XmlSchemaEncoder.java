@@ -217,14 +217,15 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
             FeatureTypeInfo info = infos[i];
             String typeName = info.prefixedName();
 
-            if (typeName.startsWith(prefix + ":")) {
+            if (typeName.startsWith(prefix + catalog.getGlobalSettings().getPrefixSeparator())) {
                 typeNames.append(typeName).append(",");
             }
 
             // JD: some of this logic should be fixed by poplulating the
             // info objects properly, double check
             //            if (typeName.startsWith(prefix)
-            //                    || ((typeName.indexOf(':') == -1)
+            //                    ||
+            // ((typeName.indexOf(catalog.getGlobalSettings().getPrefixSeparator()) == -1)
             //                    && prefix.equals(r.getWFS().getData().getDefaultNameSpace()
             //                                          .getPrefix()))) {
             //                retBuffer.append(typeName + ",");

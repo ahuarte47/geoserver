@@ -193,7 +193,7 @@ public class StoredQuery {
     }
 
     private String unmapLocalPrefixes(String typeName, Element element, Catalog catalog) {
-        String[] split = typeName.trim().split(":");
+        String[] split = typeName.trim().split(catalog.getGlobalSettings().getPrefixSeparator());
         if (split.length != 2) {
             return typeName;
         }
@@ -217,7 +217,7 @@ public class StoredQuery {
             }
         }
 
-        return prefix + ":" + localName;
+        return prefix + catalog.getGlobalSettings().getPrefixSeparator() + localName;
     }
 
     private boolean isParameter(
@@ -232,7 +232,10 @@ public class StoredQuery {
     String toString(Collection<QName> qNames) {
         StringBuilder sb = new StringBuilder();
         for (QName qName : qNames) {
-            sb.append(qName.getPrefix()).append(":").append(qName.getLocalPart()).append(", ");
+            sb.append(qName.getPrefix())
+                    .append(catalog.getGlobalSettings().getPrefixSeparator())
+                    .append(qName.getLocalPart())
+                    .append(", ");
         }
         sb.setLength(sb.length() - 2);
         return sb.toString();

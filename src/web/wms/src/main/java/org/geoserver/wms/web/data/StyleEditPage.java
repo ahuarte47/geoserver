@@ -91,7 +91,10 @@ public class StyleEditPage extends AbstractStylePage {
         String styleName = "";
         if (style != null) {
             styleName =
-                    (style.getWorkspace() == null ? "" : style.getWorkspace().getName() + ":")
+                    (style.getWorkspace() == null
+                                    ? ""
+                                    : style.getWorkspace().getName()
+                                            + getCatalog().getGlobalSettings().getPrefixSeparator())
                             + style.getName();
         }
 

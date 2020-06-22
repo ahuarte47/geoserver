@@ -103,7 +103,9 @@ public class KMLReflector {
             }
 
             // strip off prefix
-            int j = name.indexOf(':');
+            int j =
+                    name.indexOf(
+                            wmsConfiguration.getCatalog().getGlobalSettings().getPrefixSeparator());
             if (j > -1) {
                 name = name.substring(j + 1);
             }

@@ -88,7 +88,11 @@ public final class AtomUtils {
 
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("format", "application/atom+xml");
-            params.put("layers", nsPrefix + ":" + feature.getType().getTypeName());
+            params.put(
+                    "layers",
+                    nsPrefix
+                            + wms.getGeoServer().getGlobal().getPrefixSeparator()
+                            + feature.getType().getTypeName());
             params.put("featureid", feature.getID());
 
             return ResponseUtils.buildURL(

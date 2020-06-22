@@ -128,7 +128,9 @@ public class LayerInfoImpl implements LayerInfo {
 
     @Override
     public String prefixedName() {
-        return this.getResource().getStore().getWorkspace().getName() + ":" + getName();
+        return this.getResource().getStore().getWorkspace().getName()
+                + this.getResource().getCatalog().getGlobalSettings().getPrefixSeparator()
+                + getName();
     }
 
     @Override

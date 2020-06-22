@@ -104,7 +104,8 @@ public class LayerController extends AbstractCatalogController {
             @PathVariable String layerName, @PathVariable(required = false) String workspaceName) {
 
         if (workspaceName != null) {
-            layerName = workspaceName + ":" + layerName;
+            layerName =
+                    workspaceName + catalog.getGlobalSettings().getPrefixSeparator() + layerName;
         }
         LayerInfo layer = catalog.getLayerByName(layerName);
         if (layer == null) {
@@ -122,7 +123,8 @@ public class LayerController extends AbstractCatalogController {
             throws IOException {
 
         if (workspaceName != null) {
-            layerName = workspaceName + ":" + layerName;
+            layerName =
+                    workspaceName + catalog.getGlobalSettings().getPrefixSeparator() + layerName;
         }
 
         LayerInfo layer = catalog.getLayerByName(layerName);
@@ -145,7 +147,8 @@ public class LayerController extends AbstractCatalogController {
             @PathVariable(required = false) String workspaceName) {
 
         if (workspaceName != null) {
-            layerName = workspaceName + ":" + layerName;
+            layerName =
+                    workspaceName + catalog.getGlobalSettings().getPrefixSeparator() + layerName;
         }
 
         LayerInfo original = catalog.getLayerByName(layerName);

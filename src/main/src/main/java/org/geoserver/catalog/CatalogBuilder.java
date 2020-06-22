@@ -1407,8 +1407,11 @@ public class CatalogBuilder {
 
         // strip off the prefix if we're cascading from a server that does add them
         String published = wli.getName();
-        if (published.contains(":")) {
-            wli.setName(published.substring(published.lastIndexOf(':') + 1));
+        if (published.contains(catalog.getGlobalSettings().getPrefixSeparator())) {
+            wli.setName(
+                    published.substring(
+                            published.lastIndexOf(catalog.getGlobalSettings().getPrefixSeparator())
+                                    + 1));
         }
 
         return wli;
@@ -1523,8 +1526,11 @@ public class CatalogBuilder {
 
         // strip off the prefix if we're cascading from a server that does add them
         String published = wli.getName();
-        if (published.contains(":")) {
-            wli.setName(published.substring(published.lastIndexOf(':') + 1));
+        if (published.contains(catalog.getGlobalSettings().getPrefixSeparator())) {
+            wli.setName(
+                    published.substring(
+                            published.lastIndexOf(catalog.getGlobalSettings().getPrefixSeparator())
+                                    + 1));
         }
 
         return wli;

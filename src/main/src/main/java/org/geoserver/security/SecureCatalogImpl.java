@@ -42,6 +42,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.decorators.DecoratingCatalogFactory;
@@ -1268,6 +1269,10 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
                         delegate.createLayerGroup(), null, new ArrayList<>(), new ArrayList<>());
             }
         };
+    }
+
+    public SettingsInfo getGlobalSettings() {
+        return delegate.getGlobalSettings();
     }
 
     public Collection<CatalogListener> getListeners() {
