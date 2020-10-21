@@ -337,6 +337,17 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                     "GetMap STYLES parameter is mandatory if SLD nor SLD_BODY are not specified");
         }
 
+        // FIX_CITE_COMPLIANT: Check missing but mandatory GetMap parameters,
+        // otherwise the INSPIRE validator fails.
+        if (citeCompliant && getMap.getVersion() == null) {
+            throw new ServiceException(
+                    "GetMap VERSION parameter is mandatory for Cite compliant Services");
+        }
+        if (citeCompliant && styleNameList.size() == 0) {
+            throw new ServiceException(
+                    "GetMap STYLES parameter is mandatory for Cite compliant Services");
+        }
+
         // raw interpolations parameter
         String interpolationParam = (String) kvp.get("INTERPOLATIONS");
         List<String> interpolationList = new ArrayList<String>();

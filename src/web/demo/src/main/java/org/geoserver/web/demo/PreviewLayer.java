@@ -214,6 +214,28 @@ public class PreviewLayer {
         final Envelope bbox = request.getBbox();
         if (bbox == null) return null;
 
+        // FIX_CITE_COMPLIANT: Get default style name, otherwise the INSPIRE validator fails.
+        String styleName =
+                request.getStyles().size() > 0 ? request.getStyles().get(0).getName() : "";
+
+        if (com.google.common.base.Strings.isNullOrEmpty(styleName)) {
+            if (groupInfo != null) {
+                for (LayerInfo layer : Iterables.filter(groupInfo.getLayers(), LayerInfo.class)) {
+                    if (layer.getDefaultStyle() != null) {
+                        String defaultStyleName = layer.getDefaultStyle().getName();
+
+                        if (!com.google.common.base.Strings.isNullOrEmpty(defaultStyleName)) {
+                            styleName = defaultStyleName;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (layerInfo != null && layerInfo.getDefaultStyle() != null) {
+                styleName = layerInfo.getDefaultStyle().getName();
+            }
+        }
+
         Map<String, String> params = new LinkedHashMap<>();
         params.put("service", "WMS");
         params.put("version", "1.1.0");
@@ -225,9 +247,7 @@ public class PreviewLayer {
         params.put("width", String.valueOf(request.getWidth()));
         params.put("height", String.valueOf(request.getHeight()));
         params.put("srs", String.valueOf(request.getSRS()));
-        params.put(
-                "styles",
-                request.getStyles().size() > 0 ? request.getStyles().get(0).getName() : "");
+        params.put("styles", styleName);
 
         return ResponseUtils.buildURL(getBaseURL(), getPath("wms", false), params, URLType.SERVICE);
     }

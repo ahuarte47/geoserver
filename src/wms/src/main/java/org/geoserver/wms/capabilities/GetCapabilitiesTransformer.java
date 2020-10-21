@@ -497,6 +497,15 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                             request.getBaseUrl(), "wms", params("SERVICE", "WMS"), URLType.SERVICE);
             serviceUrl = appendQueryString(serviceUrl, "");
 
+            // FIX_CITE_COMPLIANT: Check missing but mandatory GetMap parameters,
+            // otherwise the INSPIRE validator fails.
+            if (serviceInfo.isCiteCompliant()
+                    && (!request.getRawKvp().containsKey("SERVICE")
+                            || !request.getRawKvp().get("SERVICE").equals("WMS"))) {
+                throw new ServiceException(
+                        "GetMap SERVICE parameter is mandatory for Cite compliant Services");
+            }
+
             handleDcpType(serviceUrl, serviceUrl);
             end("GetCapabilities");
 
@@ -1280,7 +1289,23 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 }
             }
 
-            handleLayerGroupStyles(layerName);
+            // FIX_CITE_COMPLIANT: Get the default StyleName of the first child Layer,
+            // otherwise the INSPIRE validator fails.
+            String groupStyleName = LAYER_GROUP_STYLE_NAME;
+            if (serviceInfo.isCiteCompliant()) {
+                for (LayerInfo layer : Iterables.filter(layerGroup.getLayers(), LayerInfo.class)) {
+                    if (layer.getDefaultStyle() != null) {
+                        String defaultStyleName = layer.getDefaultStyle().getName();
+
+                        if (!com.google.common.base.Strings.isNullOrEmpty(defaultStyleName)) {
+                            groupStyleName = defaultStyleName;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            handleLayerGroupStyles(layerName, groupStyleName);
 
             handleScaleHint(layerGroup);
 
@@ -1720,9 +1745,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          *
          * @param layerName the layer name, used to construct the LegendURL block
          */
-        private void handleLayerGroupStyles(String layerName) {
+        private void handleLayerGroupStyles(String layerName, String styleName) {
             start("Style");
-            element("Name", LAYER_GROUP_STYLE_NAME);
+            element("Name", styleName);
             element(
                     "Title",
                     LAYER_GROUP_STYLE_TITLE_PREFIX
