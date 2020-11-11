@@ -72,7 +72,18 @@ public abstract class GeoJSONPPIO extends CDataPPIO {
 
         @Override
         public void encode(Object value, OutputStream os) throws IOException {
-            GeometryJSON json = new GeometryJSON();
+            int decimals = 4;
+            
+            if (value instanceof Geometry) {
+        	    try {
+            	    int srid = ((Geometry)value).getSRID();
+            	    org.opengis.referencing.crs.CoordinateReferenceSystem crs = org.geotools.referencing.CRS.decode("EPSG:" + srid);
+            	    if (crs instanceof org.opengis.referencing.crs.GeographicCRS) decimals = 8;
+        	    }
+        	    catch (Exception e) {
+        	    }
+            }
+            GeometryJSON json = new GeometryJSON(decimals);
             json.write((Geometry) value, os);
         }
 
