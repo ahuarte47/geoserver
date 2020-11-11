@@ -4,12 +4,12 @@
 */
 package org.geoserver.web.data.resource;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class FeatureResourceConfigurationPanelTest extends GeoServerWicketTestSupport {
     @Test()

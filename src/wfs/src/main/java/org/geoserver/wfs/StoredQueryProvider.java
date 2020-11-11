@@ -75,7 +75,9 @@ public class StoredQueryProvider {
         Resource dir = storedQueryDir();
         for (Resource f : dir.list()) {
             try {
-                queries.add(parseStoredQuery(f, p));
+                StoredQuery query = parseStoredQuery(f, p);
+                if (query.getName().equals(StoredQuery.DEFAULT.getName())) continue;
+                queries.add(query);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error occured parsing stored query: " + f, e);
             }

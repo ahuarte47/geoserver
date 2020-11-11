@@ -10,11 +10,13 @@ import java.util.List;
 
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
-import org.geotools.feature.FeatureCollection;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.feature.collection.BaseFeatureCollection;
+import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
 
 import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
 
 
@@ -24,22 +26,17 @@ import org.opengis.feature.type.FeatureType;
  * 
  * @author Alvaro Huarte
  */
-class FeatureSizeFeatureCollection<T extends FeatureType, F extends Feature> extends BaseFeatureCollection<T, F> {
+class SimpleFeatureSizeFeatureCollection extends DecoratingSimpleFeatureCollection {
     
     /**
      * The original feature source.
      */
-    protected FeatureSource<T, F> featureSource;
+    protected FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
     
     /**
      * The feature cache to manage.
      */
-    protected List<F> featureCache;
-
-    /**
-     * The feature collection to wrap.
-     */
-    protected FeatureCollection<T, F> featureCollection;
+    protected List<SimpleFeature> featureCache;
     
     /**
      * The original query.
@@ -72,19 +69,18 @@ class FeatureSizeFeatureCollection<T extends FeatureType, F extends Feature> ext
         FEATURE_CACHE_LIMIT = featureCacheLimit;
     }
 
-    public FeatureSizeFeatureCollection(FeatureCollection<T, F> featureCollection, FeatureSource<T, F> source, Query query) {
-        super(source.getSchema());
-        this.featureCollection = featureCollection;
+    public SimpleFeatureSizeFeatureCollection(SimpleFeatureCollection delegate, FeatureSource<? extends FeatureType, ? extends Feature> source, Query query) {
+        super(delegate);
         this.featureSource = source;
         this.query = query;
     }
 
-    class CachedWrappingFeatureIterator implements FeatureIterator<F> {
+    class CachedWrappingFeatureIterator implements SimpleFeatureIterator {
         
-        private List<F> featureCache;
+        private List<SimpleFeature> featureCache;
         private int featureIndex = 0;
         
-        public CachedWrappingFeatureIterator(List<F> featureCache) {
+        public CachedWrappingFeatureIterator(List<SimpleFeature> featureCache) {
             this.featureCache = featureCache;
         }
         
@@ -94,7 +90,7 @@ class FeatureSizeFeatureCollection<T extends FeatureType, F extends Feature> ext
         }
         
         @Override
-        public F next() {
+        public SimpleFeature next() {
             return featureCache.get(featureIndex++);
         }
         
@@ -105,11 +101,11 @@ class FeatureSizeFeatureCollection<T extends FeatureType, F extends Feature> ext
     }
     
     @Override
-    public FeatureIterator<F> features() {
+    public SimpleFeatureIterator features() {
         if (featureCache != null) {
             return new CachedWrappingFeatureIterator( featureCache );
         }
-        return this.featureCollection.features();
+        return super.features();
     }
     
     @Override
@@ -120,16 +116,25 @@ class FeatureSizeFeatureCollection<T extends FeatureType, F extends Feature> ext
         if (FEATURE_CACHE_LIMIT > 0) {
             FeatureIterator<? extends Feature> it = null;
             
-            try {                
+            try {
+                int count = featureSource.getCount(query);
+                
+                if (count == 0) {
+                    featureCache = new ArrayList<SimpleFeature>();
+                    return count;
+                }
+                if (count > 0) {
+                    return count;
+                }
+                
                 // we have to iterate, save to cache to avoid later successive readings of data.
-                List<F> tempFeatureCache = new ArrayList<F>();
+                List<SimpleFeature> tempFeatureCache = new ArrayList<SimpleFeature>();
                 
                 // bean counting...
                 it = featureSource.getFeatures(query).features();
-                int count = 0;
+                count = 0;
                 while (it.hasNext()) {
-                    @SuppressWarnings("unchecked")
-                    F feature = (F) it.next();
+                    SimpleFeature feature = (SimpleFeature) it.next();
                     if (tempFeatureCache.size() < FEATURE_CACHE_LIMIT) tempFeatureCache.add(feature);
                     count++;
                 }

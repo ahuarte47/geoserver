@@ -79,7 +79,9 @@ public class HitsOutputFormat extends WFSResponse {
             // impact. Unless we introduce joins in our fetching of
             // data, we will have to count the number of features manually when needed. In
             // GML3Outputformat I use xslt to populate numberOfFeatures attribute.
-            hits.setNumberOfFeatures(countFeature(featureCollection));
+            BigInteger featureCount = countFeature(featureCollection);
+            featureCollection.setTotalNumberOfFeatures(featureCount);
+            hits.setNumberOfFeatures(featureCount);
         } else {
             hits.setNumberOfFeatures(featureCollection.getNumberOfFeatures());
         }
